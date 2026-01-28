@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  email        String         @unique
+  password     String
+  name         String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  accounts     Account[]
+  transactions Transaction[]
+  debts        Debt[]
+  debtCategories DebtCategory[]
+  recurringTransactions RecurringTransaction[]
+}
+
+model Account {
+  id           String        @id @default(cuid())
+  name         String
+  balance      Float         @default(0)
+  userId       String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+
+  @@index([userId])
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  type        String
+  amount      Float
+  description String?
+  accountId   String
+  userId      String
+  debtId      String?
+  createdAt   DateTime @default(now())
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debt        Debt?    @relation(fields: [debtId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([debtId])
+}
+
+model DebtCategory {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debts     Debt[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Debt {
+  id           String        @id @default(cuid())
+  name         String
+  totalAmount  Float
+  dueDate      DateTime?
+  categoryId   String
+  userId       String
+  category     DebtCategory  @relation(fields: [categoryId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+}
+
+model RecurringTransaction {
+  id                String   @id @default(cuid())
+  type              String
+  amount            Float
+  description       String?
+  frequency         String   // daily, weekly, monthly, yearly
+  startDate         DateTime @default(now())
+  nextExecutionDate DateTime
+  lastExecuted      DateTime?
+  isActive          Boolean  @default(true)
+  accountId         String
+  userId            String
+  debtId            String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  account           Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  debt              Debt?    @relation(fields: [debtId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([nextExecutionDate])
+}
