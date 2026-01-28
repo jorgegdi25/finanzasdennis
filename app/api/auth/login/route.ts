@@ -77,15 +77,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     )
-  } catch (error) {
-    console.error('Error en login:', error)
-    // En desarrollo, mostrar más detalles del error para debugging
-    const errorMessage = process.env.NODE_ENV === 'development' 
-      ? `Error interno del servidor: ${error instanceof Error ? error.message : String(error)}`
-      : 'Error interno del servidor'
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    )
+
   }
-}
