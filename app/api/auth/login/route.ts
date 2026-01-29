@@ -42,11 +42,5 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     )
-  } catch (error) {
-    console.error('Error en login:', error)
-    return NextResponse.json(
-      { error: `Error detallado: ${error instanceof Error ? error.message : String(error)}` },
-      { status: 500 }
-    )
+
   }
-}
