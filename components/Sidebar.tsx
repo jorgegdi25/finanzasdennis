@@ -11,7 +11,8 @@ import {
     Calendar,
     LogOut,
     Menu,
-    X
+    X,
+    Settings
 } from 'lucide-react'
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
     { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
     { href: '/debts', label: 'Debts', icon: CreditCard },
     { href: '/recurring', label: 'Recurring', icon: Calendar },
+    { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function Sidebar() {
