@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyPassword, createSession } from '@/lib/auth'
 
+/**
+ * API Route para login de usuarios
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -42,5 +45,11 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     )
-
+  } catch (error) {
+    console.error('Error en login:', error)
+    return NextResponse.json(
+      { error: 'Error interno del servidor' },
+      { status: 500 }
+    )
   }
+}
