@@ -110,12 +110,7 @@ function LoginForm() {
             </button>
           </div>
 
-          <div className="text-xs text-center text-gray-400 mt-4">
-            <p className="mb-1">Demo User</p>
-            <code className="bg-gray-100 px-2 py-1 rounded">admin@example.com</code>
-            <span className="mx-2">•</span>
-            <code className="bg-gray-100 px-2 py-1 rounded">admin123</code>
-          </div>
+
         </form>
       </div>
     </div>
