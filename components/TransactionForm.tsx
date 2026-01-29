@@ -26,7 +26,7 @@ interface Debt {
 }
 
 /**
- * Componente de formulario para crear o editar una transacción
+ * Form component to create or edit a transaction
  */
 export default function TransactionForm({ transaction, onSuccess, onCancel }: TransactionFormProps) {
   const [type, setType] = useState<'income' | 'expense'>(transaction?.type || 'expense')
@@ -57,8 +57,8 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           }
         }
       } catch (err) {
-        console.error('Error al cargar cuentas:', err)
-        setError('Error al cargar las cuentas')
+        console.error('Error loading accounts:', err)
+        setError('Error loading accounts')
       } finally {
         setLoadingAccounts(false)
       }
@@ -72,7 +72,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           setDebts(data.debts || [])
         }
       } catch (err) {
-        console.error('Error al cargar deudas:', err)
+        console.error('Error loading debts:', err)
       }
     }
 
@@ -86,16 +86,16 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
     setError('')
     setLoading(true)
 
-    // Validación básica
+    // Basic validation
     if (!accountId) {
-      setError('Por favor selecciona una cuenta')
+      setError('Please select an account')
       setLoading(false)
       return
     }
 
     const amountNum = parseFloat(amount)
     if (isNaN(amountNum) || amountNum <= 0) {
-      setError('Por favor ingresa un monto válido mayor a 0')
+      setError('Please enter a valid amount greater than 0')
       setLoading(false)
       return
     }
@@ -125,16 +125,16 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
       const data = await response.json()
 
       if (!response.ok) {
-        let errorMessage = data.error || data.message || 'Error al guardar la transacción'
+        let errorMessage = data.error || data.message || 'Error saving transaction'
 
-        // Mejorar mensajes de error comunes
+        // Improve common error messages
         if (errorMessage.includes('no existe') || errorMessage.includes('does not exist') || errorMessage.includes('table')) {
-          errorMessage = 'La tabla Transaction no existe en la base de datos. Ejecuta el script SQL en Supabase (create_transactions_table.sql)'
+          errorMessage = 'The Transaction table does not exist in the database. Run the SQL script in Supabase (create_transactions_table.sql)'
         } else if (errorMessage.includes('findMany') || errorMessage.includes('undefined')) {
-          errorMessage = 'El modelo Transaction no está disponible. Reinicia el servidor después de ejecutar: npx prisma generate'
+          errorMessage = 'The Transaction model is not available. Restart the server after running: npx prisma generate'
         }
 
-        console.error('Error al crear transacción:', {
+        console.error('Error creating transaction:', {
           status: response.status,
           error: errorMessage,
           details: data.details
@@ -145,7 +145,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         return
       }
 
-      console.log('Transacción creada exitosamente:', data)
+      console.log('Transaction created successfully:', data)
 
       // Limpiar formulario solo si no estamos editando
       if (!isEditing) {
@@ -158,10 +158,10 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
       }
       onSuccess()
     } catch (err) {
-      console.error('Error en formulario:', err)
+      console.error('Form error:', err)
       const errorMessage = err instanceof Error
         ? `Error: ${err.message}`
-        : 'Error de conexión. Por favor intenta de nuevo.'
+        : 'Connection error. Please try again.'
       setError(errorMessage)
       setLoading(false)
     }
@@ -170,7 +170,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   if (loadingAccounts) {
     return (
       <div className="text-center py-4">
-        <p className="text-gray-500">Cargando cuentas...</p>
+        <p className="text-gray-500">Loading accounts...</p>
       </div>
     )
   }
@@ -178,9 +178,9 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   if (accounts.length === 0) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
-        <p className="font-medium">No hay cuentas disponibles</p>
+        <p className="font-medium">No accounts available</p>
         <p className="text-sm mt-1">
-          Necesitas crear al menos una cuenta antes de agregar transacciones.
+          You need to create at least one account before adding transactions.
         </p>
       </div>
     )
@@ -196,7 +196,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div>
         <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-          Tipo de transacción
+          Transaction Type
         </label>
         <select
           id="type"
@@ -205,14 +205,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
         >
-          <option value="expense">Gasto</option>
-          <option value="income">Ingreso</option>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
         </select>
       </div>
 
       <div>
         <label htmlFor="accountId" className="block text-sm font-medium text-gray-700 mb-1">
-          Cuenta
+          Account
         </label>
         <select
           id="accountId"
@@ -222,7 +222,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
         >
-          <option value="">Selecciona una cuenta</option>
+          <option value="">Select an account</option>
           {accounts.map((account) => (
             <option key={account.id} value={account.id}>
               {account.name}
@@ -233,7 +233,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div>
         <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-          Monto
+          Amount
         </label>
         <input
           id="amount"
@@ -251,7 +251,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Descripción (opcional)
+          Description (optional)
         </label>
         <input
           id="description"
@@ -260,14 +260,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           onChange={(e) => setDescription(e.target.value)}
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-          placeholder="Ej: Compra de supermercado, Salario, etc."
+          placeholder="e.g. Supermarket, Salary, etc."
         />
       </div>
 
       {type === 'expense' && debts.length > 0 && (
         <div>
           <label htmlFor="debtId" className="block text-sm font-medium text-gray-700 mb-1">
-            Vincular a deuda (opcional)
+            Link to debt (optional)
           </label>
           <select
             id="debtId"
@@ -276,7 +276,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             disabled={loading}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
           >
-            <option value="">Ninguna - Gasto general</option>
+            <option value="">None - General expense</option>
             {debts.map((debt) => (
               <option key={debt.id} value={debt.id}>
                 {debt.name}
@@ -284,7 +284,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             ))}
           </select>
           <p className="mt-1 text-xs text-gray-500">
-            Si seleccionas una deuda, este gasto se registrará como un abono a la misma.
+            If you select a debt, this expense will be recorded as a payment towards it.
           </p>
         </div>
       )}
@@ -295,7 +295,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           disabled={loading || !accountId}
           className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear transacción'}
+          {loading ? 'Saving...' : isEditing ? 'Update' : 'Create transaction'}
         </button>
         {onCancel && (
           <button
@@ -304,7 +304,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             disabled={loading}
             className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
-            Cancelar
+            Cancel
           </button>
         )}
       </div>

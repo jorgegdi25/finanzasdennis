@@ -40,7 +40,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                 }
             }
         } catch (error) {
-            console.error('Error al cargar categorías:', error)
+            console.error('Error loading categories:', error)
         }
     }
 
@@ -61,7 +61,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                 setShowAddCategory(false)
             }
         } catch (err) {
-            console.error('Error al agregar categoría:', err)
+            console.error('Error adding category:', err)
         } finally {
             setLoading(true) // Wait, should be false
             setLoading(false)
@@ -92,10 +92,10 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                 onSuccess()
             } else {
                 const data = await response.json()
-                setError(data.error || 'Error al guardar la deuda')
+                setError(data.error || 'Error saving debt')
             }
         } catch (err) {
-            setError('Error de conexión')
+            setError('Connection error')
         } finally {
             setLoading(false)
         }
@@ -110,20 +110,20 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
             )}
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la deuda</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Debt Name</label>
                 <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                    placeholder="Ej: Préstamo Banco, Deuda con Proveedor"
+                    placeholder="e.g. Bank Loan, Provider Debt"
                     required
                 />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Monto Total</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
                     <input
                         type="number"
                         step="0.01"
@@ -135,7 +135,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Vencimiento</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
                     <input
                         type="date"
                         value={dueDate}
@@ -146,7 +146,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <div className="flex gap-2">
                     {!showAddCategory ? (
                         <>
@@ -165,7 +165,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                                 onClick={() => setShowAddCategory(true)}
                                 className="px-4 py-2 text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50"
                             >
-                                + Nueva
+                                + New
                             </button>
                         </>
                     ) : (
@@ -175,21 +175,21 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                                placeholder="Nombre de la categoría"
+                                placeholder="Category name"
                             />
                             <button
                                 type="button"
                                 onClick={handleAddCategory}
                                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                             >
-                                Agregar
+                                Add
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowAddCategory(false)}
                                 className="px-4 py-2 text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50"
                             >
-                                Cancelar
+                                Cancel
                             </button>
                         </>
                     )}
@@ -202,14 +202,14 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                     disabled={loading}
                     className="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50"
                 >
-                    {loading ? 'Guardando...' : debt ? 'Actualizar Deuda' : 'Crear Deuda'}
+                    {loading ? 'Saving...' : debt ? 'Update Debt' : 'Create Debt'}
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
                     className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-200 transition-colors"
                 >
-                    Cancelar
+                    Cancel
                 </button>
             </div>
         </form>

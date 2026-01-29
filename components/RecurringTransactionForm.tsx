@@ -99,8 +99,8 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                         onChange={(e) => setType(e.target.value as any)}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="income">Income (Salary, Rent)</option>
-                        <option value="expense">Expense (Subscriptions, Services)</option>
+                        <option value="income">Income (Salary, Rent, etc.)</option>
+                        <option value="expense">Expense (Subscriptions, Services, etc.)</option>
                     </select>
                 </div>
                 <div>
@@ -170,7 +170,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
 
             {type === 'expense' && debts.length > 0 && (
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Link to Debt (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700">Link to Debt (optional)</label>
                     <select
                         value={debtId}
                         onChange={(e) => setDebtId(e.target.value)}

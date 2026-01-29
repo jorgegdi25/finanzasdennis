@@ -13,7 +13,7 @@ interface AccountFormProps {
 }
 
 /**
- * Componente de formulario para crear o editar una cuenta bancaria
+ * Form component to create or edit a bank account
  */
 export default function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) {
   const [name, setName] = useState(account?.name || '')
@@ -44,12 +44,12 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       })
 
       if (!response.ok) {
-        let errorMessage = 'Error al guardar la cuenta'
+        let errorMessage = 'Error saving account'
         try {
           const data = await response.json()
           errorMessage = data.error || data.message || errorMessage
         } catch (parseError) {
-          // Si no se puede parsear el JSON, usar el status text
+          // If JSON parsing fails, use status text
           errorMessage = `Error ${response.status}: ${response.statusText}`
         }
         setError(errorMessage)
@@ -66,10 +66,10 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
       }
       onSuccess()
     } catch (err) {
-      console.error('Error en formulario:', err)
-      const errorMessage = err instanceof Error 
-        ? `Error: ${err.message}` 
-        : 'Error de conexión. Por favor intenta de nuevo.'
+      console.error('Form error:', err)
+      const errorMessage = err instanceof Error
+        ? `Error: ${err.message}`
+        : 'Connection error. Please try again.'
       setError(errorMessage)
       setLoading(false)
     }
@@ -85,7 +85,7 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
 
       <div>
         <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          Nombre de la cuenta
+          Account Name
         </label>
         <input
           id="name"
@@ -95,13 +95,13 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           onChange={(e) => setName(e.target.value)}
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-          placeholder="Ej: Cuenta de Ahorros, Tarjeta de Crédito, etc."
+          placeholder="e.g. Savings Account, Credit Card, etc."
         />
       </div>
 
       <div>
         <label htmlFor="balance" className="block text-sm font-medium text-gray-700 mb-1">
-          Balance inicial
+          Initial Balance
         </label>
         <input
           id="balance"
@@ -121,7 +121,7 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
           disabled={loading}
           className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear cuenta'}
+          {loading ? 'Saving...' : isEditing ? 'Update' : 'Create account'}
         </button>
         {onCancel && (
           <button
@@ -130,7 +130,7 @@ export default function AccountForm({ account, onSuccess, onCancel }: AccountFor
             disabled={loading}
             className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
-            Cancelar
+            Cancel
           </button>
         )}
       </div>

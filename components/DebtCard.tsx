@@ -31,7 +31,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
     }
 
     const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('es-MX', {
+        return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -48,7 +48,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
                     <h3 className="text-xl font-bold text-gray-900">{debt.name}</h3>
                     {debt.dueDate && (
                         <p className="text-sm text-gray-500 mt-1">
-                            Vence el: {formatDate(debt.dueDate)}
+                            Due on: {formatDate(debt.dueDate)}
                         </p>
                     )}
                 </div>
@@ -57,7 +57,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
             <div className="space-y-4">
                 <div className="flex justify-between items-end">
                     <div>
-                        <p className="text-sm text-gray-500">Pagado</p>
+                        <p className="text-sm text-gray-500">Paid</p>
                         <p className="text-lg font-bold text-green-600">{formatCurrency(debt.paidAmount)}</p>
                     </div>
                     <div className="text-right">
@@ -71,7 +71,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
                     <div className="flex mb-2 items-center justify-between">
                         <div>
                             <span className="text-xs font-semibold inline-block text-indigo-600">
-                                {progress.toFixed(0)}% completado
+                                {progress.toFixed(0)}% completed
                             </span>
                         </div>
                     </div>
@@ -85,7 +85,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
 
                 <div className="pt-4 border-t border-gray-50 flex justify-between items-center">
                     <div>
-                        <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Pendiente</p>
+                        <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Pending</p>
                         <p className="text-xl font-black text-red-500">{formatCurrency(debt.remainingAmount)}</p>
                     </div>
                     <div className="flex gap-2">
@@ -93,7 +93,7 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
                             <button
                                 onClick={() => onEdit(debt)}
                                 className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                                title="Editar"
+                                title="Edit"
                             >
                                 ✏️
                             </button>
