@@ -67,7 +67,11 @@ export default function DebtsPage() {
                     <p className="text-gray-500 mt-1">Track your debts and payment progress</p>
                 </div>
                 <button
-                    onClick={() => { setEditingDebt(null); setShowForm(true) }}
+                    onClick={() => {
+                        setEditingDebt(null);
+                        setShowForm(true);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                 >
                     <Plus className="w-5 h-5" />
@@ -77,7 +81,7 @@ export default function DebtsPage() {
 
             {/* Form Modal */}
             {showForm && (
-                <div className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <div id="debt-form-container" className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
                     <h2 className="text-lg font-semibold mb-4">
                         {editingDebt ? 'Edit Debt' : 'New Debt'}
                     </h2>

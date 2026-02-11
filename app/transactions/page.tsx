@@ -66,7 +66,10 @@ export default function TransactionsPage() {
           <p className="text-gray-500 mt-1">Record income and expenses</p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setShowForm(true)
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
           className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
         >
           <Plus className="w-5 h-5" />
@@ -76,7 +79,7 @@ export default function TransactionsPage() {
 
       {/* Form Modal */}
       {showForm && (
-        <div className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+        <div id="transaction-form-container" className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
           <h2 className="text-lg font-semibold mb-4">
             {editingTransaction ? 'Edit Transaction' : 'New Transaction'}
           </h2>
@@ -170,6 +173,7 @@ export default function TransactionsPage() {
               onEdit={(t) => {
                 setEditingTransaction(t as Transaction)
                 setShowForm(true)
+                window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
             />
           ))}
