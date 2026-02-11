@@ -168,7 +168,26 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         return
       }
 
-      console.log('Transaction created successfully:', data)
+      // If we are editing AND the user checked "isRecurring", create the template too
+      if (isEditing && isRecurring) {
+        console.log('Creating recurring template from existing transaction...')
+        await fetch('/api/recurring-transactions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type,
+            amount: amountNum,
+            description: description.trim() || null,
+            accountId,
+            debtId: type === 'expense' && debtId ? debtId : null,
+            frequency,
+            startDate,
+            endDate: endDate || null,
+          }),
+        })
+      }
+
+      console.log('Transaction processed successfully:', data)
 
       // Limpiar formulario solo si no estamos editando
       if (!isEditing) {
@@ -317,72 +336,75 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         </div>
       )}
 
-      {!isEditing && (
-        <div className="pt-2">
-          <label className="inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isRecurring}
-              onChange={(e) => setIsRecurring(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
-            <span className="ms-3 text-sm font-medium text-gray-900">Is this a recurring transaction?</span>
-          </label>
+      {/* Recurrence Toggle - Now available during edit too */}
+      <div className="pt-2">
+        <label className="inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isRecurring}
+            onChange={(e) => setIsRecurring(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+          <span className="ms-3 text-sm font-medium text-gray-900">
+            {isEditing ? 'Convert to recurring transaction?' : 'Is this a recurring transaction?'}
+          </span>
+        </label>
 
-          {isRecurring && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-              <div>
-                <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
-                  Frequency
-                </label>
-                <select
-                  id="frequency"
-                  value={frequency}
-                  onChange={(e) => setFrequency(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                  <option value="yearly">Yearly</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date
-                  </label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    required={isRecurring}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date (optional)
-                  </label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">
-                A new transaction will be created automatically based on this schedule.
-              </p>
+        {isRecurring && (
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div>
+              <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
+                Frequency
+              </label>
+              <select
+                id="frequency"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+              </select>
             </div>
-          )}
-        </div>
-      )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Date
+                </label>
+                <input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  required={isRecurring}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                  End Date (optional)
+                </label>
+                <input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
+              {isEditing
+                ? 'This instance will be updated and a new schedule will be created for future transactions.'
+                : 'A new transaction will be created automatically based on this schedule.'}
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="flex gap-2 pt-2">
         <button
