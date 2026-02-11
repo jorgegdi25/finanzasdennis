@@ -44,7 +44,11 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   // Recurrence states
   const [isRecurring, setIsRecurring] = useState(false)
   const [frequency, setFrequency] = useState('monthly')
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
+  const [startDate, setStartDate] = useState(
+    transaction?.id
+      ? new Date().toISOString().split('T')[0] // Default to today for new recurrence
+      : new Date().toISOString().split('T')[0]
+  )
   const [endDate, setEndDate] = useState('')
 
   const isEditing = !!transaction
@@ -386,7 +390,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
               </div>
               <div>
                 <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date (optional)
+                  End Date <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
                 <input
                   id="endDate"

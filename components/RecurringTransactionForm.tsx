@@ -143,7 +143,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">End Date (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700">End Date <span className="text-gray-400 font-normal">(Optional)</span></label>
                     <input
                         type="date"
                         value={endDate}
