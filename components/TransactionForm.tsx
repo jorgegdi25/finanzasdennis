@@ -23,6 +23,7 @@ interface TransactionFormProps {
 interface Debt {
   id: string
   name: string
+  remainingAmount: number
 }
 
 /**
@@ -39,6 +40,12 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   const [loadingAccounts, setLoadingAccounts] = useState(true)
   const [debtId, setDebtId] = useState(transaction?.debtId || '')
   const [debts, setDebts] = useState<Debt[]>([])
+
+  // Recurrence states
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [frequency, setFrequency] = useState('monthly')
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
+  const [endDate, setEndDate] = useState('')
 
   const isEditing = !!transaction
 
@@ -101,15 +108,31 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
     }
 
     try {
-      const url = isEditing ? `/api/transactions/${transaction.id}` : '/api/transactions'
-      const method = isEditing ? 'PUT' : 'POST'
+      // Determinar URL y método basado en si es edición o si es recurrente
+      let url = isEditing ? `/api/transactions/${transaction.id}` : '/api/transactions'
+      let method = isEditing ? 'PUT' : 'POST'
 
-      const requestBody = {
+      // Si es una creación y es recurrente, usamos el endpoint de transacciones recurrentes
+      if (!isEditing && isRecurring) {
+        url = '/api/recurring-transactions'
+      }
+
+      let requestBody: any = {
         type,
         amount: amountNum,
         description: description.trim() || null,
         accountId,
         debtId: type === 'expense' && debtId ? debtId : null,
+      }
+
+      // Añadir campos de recurrencia si aplica
+      if (isRecurring && !isEditing) {
+        requestBody = {
+          ...requestBody,
+          frequency,
+          startDate,
+          endDate: endDate || null,
+        }
       }
 
       console.log('Enviando transacción:', requestBody)
@@ -152,6 +175,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         setType('expense')
         setAmount('')
         setDescription('')
+        setIsRecurring(false)
         if (accounts.length > 0) {
           setAccountId(accounts[0].id)
         }
@@ -194,20 +218,40 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
         </div>
       )}
 
-      <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-          Transaction Type
-        </label>
-        <select
-          id="type"
-          value={type}
-          onChange={(e) => setType(e.target.value as 'income' | 'expense')}
-          disabled={loading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-        >
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+            Transaction Type
+          </label>
+          <select
+            id="type"
+            value={type}
+            onChange={(e) => setType(e.target.value as 'income' | 'expense')}
+            disabled={loading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+          >
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+            Amount
+          </label>
+          <input
+            id="amount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            required
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            disabled={loading}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
+            placeholder="0.00"
+          />
+        </div>
       </div>
 
       <div>
@@ -229,24 +273,6 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             </option>
           ))}
         </select>
-      </div>
-
-      <div>
-        <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-          Amount
-        </label>
-        <input
-          id="amount"
-          type="number"
-          step="0.01"
-          min="0.01"
-          required
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          disabled={loading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-          placeholder="0.00"
-        />
       </div>
 
       <div>
@@ -283,26 +309,95 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
               </option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-gray-500">
-            If you select a debt, this expense will be recorded as a payment towards it.
-          </p>
+          {debtId && (
+            <p className="mt-2 text-sm font-medium text-indigo-600 bg-indigo-50 p-2 rounded">
+              Current remaining balance: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(debts.find(d => d.id === debtId)?.remainingAmount || 0)}
+            </p>
+          )}
         </div>
       )}
 
-      <div className="flex gap-2">
+      {!isEditing && (
+        <div className="pt-2">
+          <label className="inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-900">Is this a recurring transaction?</span>
+          </label>
+
+          {isRecurring && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div>
+                <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
+                  Frequency
+                </label>
+                <select
+                  id="frequency"
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    required={isRecurring}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    End Date (optional)
+                  </label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                A new transaction will be created automatically based on this schedule.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex gap-2 pt-2">
         <button
           type="submit"
           disabled={loading || !accountId}
-          className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 bg-black text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         >
-          {loading ? 'Saving...' : isEditing ? 'Update' : 'Create transaction'}
+          {loading ? 'Saving...' : isEditing ? 'Update Transaction' : `Create ${isRecurring ? 'Recurring ' : ''}Transaction`}
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 transition-colors"
           >
             Cancel
           </button>

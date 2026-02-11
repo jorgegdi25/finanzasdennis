@@ -124,6 +124,12 @@ export default function RecurringTransactionsPage() {
                                     <Calendar className="w-4 h-4" />
                                     <span>Next: <span className="font-medium text-gray-700">{formatDate(item.nextExecutionDate)}</span></span>
                                 </div>
+                                {item.endDate && (
+                                    <div className="flex items-center text-sm text-gray-500 gap-2">
+                                        <Clock className="w-4 h-4" />
+                                        <span>Ends: <span className="font-medium text-gray-700">{formatDate(item.endDate)}</span></span>
+                                    </div>
+                                )}
                                 <p className="text-xs text-gray-400 mt-2">
                                     Account: {item.account?.name}
                                 </p>

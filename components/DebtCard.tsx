@@ -98,6 +98,15 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
                                 ✏️
                             </button>
                         )}
+                        {onDelete && (
+                            <button
+                                onClick={() => onDelete(debt.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
+                            >
+                                🗑️
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

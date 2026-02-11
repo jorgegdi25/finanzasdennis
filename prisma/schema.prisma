@@ -90,6 +90,7 @@ model RecurringTransaction {
   description       String?
   frequency         String   // daily, weekly, monthly, yearly
   startDate         DateTime @default(now())
+  endDate           DateTime?
   nextExecutionDate DateTime
   lastExecuted      DateTime?
   isActive          Boolean  @default(true)

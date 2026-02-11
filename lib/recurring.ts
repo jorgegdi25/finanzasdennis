@@ -50,11 +50,17 @@ export async function processRecurringTransactions(userId: string) {
                     }
 
                     // 4. Update the recurring template
+                    let isActive = true
+                    if (template.endDate && nextDate > template.endDate) {
+                        isActive = false
+                    }
+
                     await (tx as any).recurringTransaction.update({
                         where: { id: template.id },
                         data: {
                             lastExecuted: now,
                             nextExecutionDate: nextDate,
+                            isActive
                         },
                     })
                 })

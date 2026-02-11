@@ -44,6 +44,20 @@ export default function DebtsPage() {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
     }
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this debt?')) return
+        try {
+            const res = await fetch(`/api/debts/${id}`, { method: 'DELETE' })
+            if (res.ok) {
+                mutate('/api/debts')
+            } else {
+                alert('Error deleting debt')
+            }
+        } catch (err) {
+            alert('Error deleting')
+        }
+    }
+
     return (
         <AppLayout>
             {/* Header */}
@@ -136,6 +150,7 @@ export default function DebtsPage() {
                                 setEditingDebt(d)
                                 setShowForm(true)
                             }}
+                            onDelete={handleDelete}
                         />
                     ))}
                 </div>

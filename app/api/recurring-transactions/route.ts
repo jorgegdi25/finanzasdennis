@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
                 description,
                 frequency,
                 startDate: new Date(startDate || new Date()),
+                endDate: body.endDate ? new Date(body.endDate) : null,
                 nextExecutionDate: new Date(startDate || new Date()),
                 accountId,
                 userId: session,
@@ -67,6 +68,9 @@ export async function POST(request: NextRequest) {
                 isActive: true,
             },
         })
+
+        // Process immediately so if the start date is today, the first transaction is created
+        await processRecurringTransactions(session)
 
         return NextResponse.json({ recurring }, { status: 201 })
     } catch (error: any) {

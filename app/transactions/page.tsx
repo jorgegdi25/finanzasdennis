@@ -21,6 +21,7 @@ interface Transaction {
 export default function TransactionsPage() {
   const { data, error: swrError, isLoading } = useSWR('/api/transactions', fetcher)
   const [showForm, setShowForm] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all')
 
   const transactions: Transaction[] = data?.transactions || []
@@ -28,6 +29,7 @@ export default function TransactionsPage() {
 
   const handleSuccess = () => {
     setShowForm(false)
+    setEditingTransaction(null)
     mutate('/api/transactions')
     mutate('/api/accounts')
   }
@@ -75,10 +77,16 @@ export default function TransactionsPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-          <h2 className="text-lg font-semibold mb-4">New Transaction</h2>
+          <h2 className="text-lg font-semibold mb-4">
+            {editingTransaction ? 'Edit Transaction' : 'New Transaction'}
+          </h2>
           <TransactionForm
+            transaction={editingTransaction || undefined}
             onSuccess={handleSuccess}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => {
+              setShowForm(false)
+              setEditingTransaction(null)
+            }}
           />
         </div>
       )}
@@ -159,6 +167,10 @@ export default function TransactionsPage() {
               key={transaction.id}
               transaction={transaction}
               onDelete={handleDelete}
+              onEdit={(t) => {
+                setEditingTransaction(t as Transaction)
+                setShowForm(true)
+              }}
             />
           ))}
         </div>

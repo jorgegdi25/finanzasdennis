@@ -25,6 +25,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
     const [accountId, setAccountId] = useState('')
     const [debtId, setDebtId] = useState('')
     const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0])
+    const [endDate, setEndDate] = useState('')
 
     const [accounts, setAccounts] = useState<Account[]>([])
     const [debts, setDebts] = useState<Debt[]>([])
@@ -71,6 +72,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     accountId,
                     debtId: type === 'expense' && debtId ? debtId : null,
                     startDate,
+                    endDate: endDate || null,
                 }),
             })
 
@@ -137,6 +139,15 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                         required
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">End Date (Optional)</label>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     />
                 </div>
