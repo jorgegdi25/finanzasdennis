@@ -82,7 +82,7 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
 
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${isIncome ? 'border-green-500' : 'border-red-500'
-      } hover:shadow-lg transition-shadow`}>
+      } hover:shadow-lg transition-shadow h-full flex flex-col`}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
@@ -131,7 +131,7 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
         </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="mt-auto pt-4 border-t border-gray-200">
         <div className="flex justify-between items-center">
           <span className="text-sm text-gray-600">{t('card.amount')}</span>
           <span

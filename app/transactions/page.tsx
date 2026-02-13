@@ -167,7 +167,7 @@ export default function TransactionsPage() {
           <p className="text-gray-500 mt-2">{t('transactions.noTransactionsFor', { month: monthName, year: String(selectedYear) })}</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTransactions.map((transaction) => (
             <TransactionCard key={transaction.id} transaction={transaction} onDelete={handleDelete}
               onEdit={(tr) => { setEditingTransaction(tr as Transaction); setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />
