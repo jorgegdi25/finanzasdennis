@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getSharedUserIds } from '@/lib/user-utils'
 
 export async function GET(request: NextRequest) {
     try {
         const session = await getSession()
         if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
+        const userIds = await getSharedUserIds(session)
+
         const categories = await prisma.debtCategory.findMany({
-            where: { userId: session },
+            where: { userId: { in: userIds } },
             orderBy: { name: 'asc' }
         })
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { processRecurringTransactions } from '@/lib/recurring'
+import { getSharedUserIds } from '@/lib/user-utils'
 
 const getModel = () => (prisma as any).recurringTransaction
 
@@ -10,18 +11,22 @@ export async function GET(request: NextRequest) {
         const session = await getSession()
         if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-        // Log the models for debugging in server logs
-        console.log('GET Recurring: Triggering processing for user', session)
-        await processRecurringTransactions(session)
+        // Obtener todos los IDs de usuario del grupo
+        const userIds = await getSharedUserIds(session)
+
+        // Procesar recurrentes pendientes (una vez por usuario del grupo)
+        for (const userId of userIds) {
+            await processRecurringTransactions(userId)
+        }
 
         const model = getModel()
         if (!model) {
-            console.error('RecurringTransaction model NOT FOUND in prisma client!')
             return NextResponse.json({ error: 'Error de configuración de base de datos' }, { status: 500 })
         }
 
         const recurring = await model.findMany({
-            where: { userId: session },
+            where: { userId: { in: userIds } },
+
             include: {
                 account: { select: { name: true } },
                 debt: { select: { name: true } },

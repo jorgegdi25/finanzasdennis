@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from '@/lib/i18n'
 import {
     LayoutDashboard,
     Wallet,
@@ -15,18 +16,19 @@ import {
     Settings
 } from 'lucide-react'
 
-const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/accounts', label: 'Accounts', icon: Wallet },
-    { href: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
-    { href: '/debts', label: 'Debts', icon: CreditCard },
-    { href: '/recurring', label: 'Recurring', icon: Calendar },
-    { href: '/settings', label: 'Settings', icon: Settings },
-]
-
 export default function Sidebar() {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
+    const { t } = useTranslation()
+
+    const navItems = [
+        { href: '/dashboard', label: t('nav.panel'), icon: LayoutDashboard },
+        { href: '/accounts', label: t('nav.accounts'), icon: Wallet },
+        { href: '/transactions', label: t('nav.transactions'), icon: ArrowLeftRight },
+        { href: '/debts', label: t('nav.debts'), icon: CreditCard },
+        { href: '/recurring', label: t('nav.recurring'), icon: Calendar },
+        { href: '/settings', label: t('nav.settings'), icon: Settings },
+    ]
 
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' })
@@ -108,7 +110,7 @@ export default function Sidebar() {
                             className="flex items-center gap-3 px-4 py-3 w-full text-left text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                         >
                             <LogOut size={20} />
-                            <span>Log Out</span>
+                            <span>{t('nav.logout')}</span>
                         </button>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { processRecurringTransactions } from '@/lib/recurring'
+import { getSharedUserIds } from '@/lib/user-utils'
 
 /**
  * API Route para gestionar cuentas bancarias
@@ -20,12 +20,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Procesar transacciones recurrentes pendientes
-    await processRecurringTransactions(session)
+    // Obtener todos los IDs de usuario del grupo
+    const userIds = await getSharedUserIds(session)
 
-    // Obtener todas las cuentas del usuario
+
+    // Obtener todas las cuentas del grupo
     const accounts = await prisma.account.findMany({
-      where: { userId: session },
+      where: { userId: { in: userIds } },
     })
 
     // Ordenar manualmente por fecha de creación (más recientes primero)

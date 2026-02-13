@@ -6,92 +6,69 @@ import RecurringTransactionForm from '@/components/RecurringTransactionForm'
 import { Plus, Clock, ArrowUpCircle, ArrowDownCircle, Trash2, Calendar } from 'lucide-react'
 import useSWR, { mutate } from 'swr'
 import { fetcher } from '@/lib/fetcher'
+import { useTranslation, type TranslationKey } from '@/lib/i18n'
 
 export default function RecurringTransactionsPage() {
+    const { t, locale } = useTranslation()
     const { data, error, isLoading } = useSWR('/api/recurring-transactions', fetcher)
     const [showForm, setShowForm] = useState(false)
 
     const recurring = data?.recurring || []
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Delete this schedule? No more automatic transactions will be created.')) return
-
+        if (!confirm(t('recurring.confirmDelete'))) return
         try {
             const res = await fetch(`/api/recurring-transactions/${id}`, { method: 'DELETE' })
-            if (res.ok) {
-                mutate('/api/recurring-transactions')
-            }
-        } catch (err) {
-            alert('Error deleting')
-        }
+            if (res.ok) { mutate('/api/recurring-transactions') }
+        } catch (err) { alert(t('recurring.deleteError')) }
     }
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+        return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(amount)
     }
 
     const formatDate = (dateStr: string) => {
-        return new Date(dateStr).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        })
+        return new Date(dateStr).toLocaleDateString(locale === 'es' ? 'es-CO' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })
     }
 
     const getFrequencyLabel = (f: string) => {
-        const labels: Record<string, string> = {
-            daily: 'Daily',
-            weekly: 'Weekly',
-            monthly: 'Monthly',
-            yearly: 'Yearly'
-        }
-        return labels[f] || f
+        const key = `freq.${f}` as TranslationKey
+        return t(key)
     }
 
     return (
         <AppLayout>
-            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Recurring Transactions</h1>
-                    <p className="text-gray-500 mt-1">Automate fixed income and expenses</p>
+                    <h1 className="text-2xl font-bold text-gray-900">{t('recurring.title')}</h1>
+                    <p className="text-gray-500 mt-1">{t('recurring.subtitle')}</p>
                 </div>
                 <button
-                    onClick={() => {
-                        setShowForm(true)
-                        window.scrollTo({ top: 0, behavior: 'smooth' })
-                    }}
+                    onClick={() => { setShowForm(true); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                     className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
                 >
                     <Plus className="w-5 h-5" />
-                    New Schedule
+                    {t('recurring.new')}
                 </button>
             </div>
 
-            {/* Form Modal */}
             {showForm && (
                 <div id="recurring-form-container" className="mb-6 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-                    <h2 className="text-lg font-semibold mb-4">Schedule New Transaction</h2>
+                    <h2 className="text-lg font-semibold mb-4">{t('recurring.scheduleNew')}</h2>
                     <RecurringTransactionForm
-                        onSuccess={() => {
-                            setShowForm(false)
-                            mutate('/api/recurring-transactions')
-                        }}
+                        onSuccess={() => { setShowForm(false); mutate('/api/recurring-transactions') }}
                         onCancel={() => setShowForm(false)}
                     />
                 </div>
             )}
 
-            {/* Recurring List */}
             {isLoading ? (
-                <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-                </div>
+                <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div></div>
             ) : recurring.length === 0 ? (
                 <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
                     <div className="text-5xl mb-4">📅</div>
-                    <h3 className="text-xl font-bold text-gray-900">No schedules yet</h3>
-                    <p className="text-gray-500 mt-2">Add subscriptions, salaries or automatic rent payments</p>
+                    <h3 className="text-xl font-bold text-gray-900">{t('recurring.noSchedules')}</h3>
+                    <p className="text-gray-500 mt-2">{t('recurring.noSchedulesDesc')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -99,16 +76,9 @@ export default function RecurringTransactionsPage() {
                         <div key={item.id} className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-2 rounded-lg ${item.type === 'income' ? 'bg-green-50' : 'bg-red-50'}`}>
-                                    {item.type === 'income' ? (
-                                        <ArrowUpCircle className="w-5 h-5 text-green-600" />
-                                    ) : (
-                                        <ArrowDownCircle className="w-5 h-5 text-red-600" />
-                                    )}
+                                    {item.type === 'income' ? <ArrowUpCircle className="w-5 h-5 text-green-600" /> : <ArrowDownCircle className="w-5 h-5 text-red-600" />}
                                 </div>
-                                <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                >
+                                <button onClick={() => handleDelete(item.id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                                     <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
@@ -121,21 +91,19 @@ export default function RecurringTransactionsPage() {
                             <div className="space-y-2 pt-4 border-t border-gray-100">
                                 <div className="flex items-center text-sm text-gray-500 gap-2">
                                     <Clock className="w-4 h-4" />
-                                    <span>Frequency: <span className="font-medium text-gray-700">{getFrequencyLabel(item.frequency)}</span></span>
+                                    <span>{t('recurring.frequency')} <span className="font-medium text-gray-700">{getFrequencyLabel(item.frequency)}</span></span>
                                 </div>
                                 <div className="flex items-center text-sm text-gray-500 gap-2">
                                     <Calendar className="w-4 h-4" />
-                                    <span>Next: <span className="font-medium text-gray-700">{formatDate(item.nextExecutionDate)}</span></span>
+                                    <span>{t('recurring.next')} <span className="font-medium text-gray-700">{formatDate(item.nextExecutionDate)}</span></span>
                                 </div>
                                 {item.endDate && (
                                     <div className="flex items-center text-sm text-gray-500 gap-2">
                                         <Clock className="w-4 h-4" />
-                                        <span>Ends: <span className="font-medium text-gray-700">{formatDate(item.endDate)}</span></span>
+                                        <span>{t('recurring.ends')} <span className="font-medium text-gray-700">{formatDate(item.endDate)}</span></span>
                                     </div>
                                 )}
-                                <p className="text-xs text-gray-400 mt-2">
-                                    Account: {item.account?.name}
-                                </p>
+                                <p className="text-xs text-gray-400 mt-2">{t('recurring.account')} {item.account?.name}</p>
                             </div>
                         </div>
                     ))}

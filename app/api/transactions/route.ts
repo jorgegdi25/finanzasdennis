@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getSharedUserIds } from '@/lib/user-utils'
 
 /**
  * API Route para gestionar transacciones
@@ -19,6 +20,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Obtener todos los IDs de usuario del grupo
+    const userIds = await getSharedUserIds(session)
+
     // Verificar que el modelo Transaction está disponible
     if (!prisma.transaction) {
       return NextResponse.json(
@@ -34,7 +38,7 @@ export async function GET(request: NextRequest) {
     const accountId = searchParams.get('accountId')
 
     // Construir filtro
-    const where: any = { userId: session }
+    const where: any = { userId: { in: userIds } }
     if (accountId) {
       where.accountId = accountId
     }
@@ -133,11 +137,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar que la cuenta existe y pertenece al usuario
+    // Obtener todos los IDs de usuario del grupo
+    const userIds = await getSharedUserIds(session)
+
+    // Verificar que la cuenta existe y pertenece al grupo
     const account = await prisma.account.findFirst({
       where: {
         id: accountId,
-        userId: session,
+        userId: { in: userIds },
       },
     })
 

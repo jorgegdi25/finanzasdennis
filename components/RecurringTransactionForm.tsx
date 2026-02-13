@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from '@/lib/i18n'
 
 interface Account {
     id: string
@@ -18,6 +19,7 @@ interface RecurringTransactionFormProps {
 }
 
 export default function RecurringTransactionForm({ onSuccess, onCancel }: RecurringTransactionFormProps) {
+    const { t } = useTranslation()
     const [type, setType] = useState<'income' | 'expense'>('expense')
     const [amount, setAmount] = useState('')
     const [description, setDescription] = useState('')
@@ -70,7 +72,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     description,
                     frequency,
                     accountId,
-                    debtId: type === 'expense' && debtId ? debtId : null,
+                    debtId: debtId || null, // Allow linking both income and expense
                     startDate,
                     endDate: endDate || null,
                 }),
@@ -80,7 +82,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                 onSuccess()
             } else {
                 const data = await response.json()
-                setError(data.error || 'Error creating recurring transaction')
+                setError(data.error || 'Error')
             }
         } catch (err) {
             setError('Connection error')
@@ -95,34 +97,34 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Type</label>
+                    <label className="block text-sm font-medium text-gray-700">{t('form.type')}</label>
                     <select
                         value={type}
                         onChange={(e) => setType(e.target.value as any)}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="income">Income (Salary, Rent, etc.)</option>
-                        <option value="expense">Expense (Subscriptions, Services, etc.)</option>
+                        <option value="income">{t('form.typeIncome')}</option>
+                        <option value="expense">{t('form.typeExpense')}</option>
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Frequency</label>
+                    <label className="block text-sm font-medium text-gray-700">{t('form.frequency')}</label>
                     <select
                         value={frequency}
                         onChange={(e) => setFrequency(e.target.value)}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
+                        <option value="daily">{t('freq.daily')}</option>
+                        <option value="weekly">{t('freq.weekly')}</option>
+                        <option value="monthly">{t('freq.monthly')}</option>
+                        <option value="yearly">{t('freq.yearly')}</option>
                     </select>
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Amount</label>
+                    <label className="block text-sm font-medium text-gray-700">{t('form.amount')}</label>
                     <input
                         type="number"
                         step="0.01"
@@ -133,7 +135,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Start Date</label>
+                    <label className="block text-sm font-medium text-gray-700">{t('form.startDate')}</label>
                     <input
                         type="date"
                         required
@@ -143,7 +145,9 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">End Date <span className="text-gray-400 font-normal">(Optional)</span></label>
+                    <label className="block text-sm font-medium text-gray-700">
+                        {t('form.endDate')} <span className="text-gray-400 font-normal">{t('form.optional')}</span>
+                    </label>
                     <input
                         type="date"
                         value={endDate}
@@ -154,11 +158,11 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-sm font-medium text-gray-700">{t('form.description')}</label>
                 <input
                     type="text"
                     required
-                    placeholder="e.g. Netflix, Monthly salary, Rent"
+                    placeholder={t('form.descriptionPlaceholder')}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -166,7 +170,7 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700">Account</label>
+                <label className="block text-sm font-medium text-gray-700">{t('form.account')}</label>
                 <select
                     value={accountId}
                     required
@@ -179,15 +183,18 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                 </select>
             </div>
 
-            {type === 'expense' && debts.length > 0 && (
+            {/* Link to Debt — available for BOTH income and expense */}
+            {debts.length > 0 && (
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Link to Debt (optional)</label>
+                    <label className="block text-sm font-medium text-gray-700">
+                        {t('recurring.linkDebt')} <span className="text-gray-400 font-normal">{t('recurring.linkDebtHint')}</span>
+                    </label>
                     <select
                         value={debtId}
                         onChange={(e) => setDebtId(e.target.value)}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
-                        <option value="">None</option>
+                        <option value="">{t('recurring.none')}</option>
                         {debts.map((d) => (
                             <option key={d.id} value={d.id}>{d.name}</option>
                         ))}
@@ -201,14 +208,14 @@ export default function RecurringTransactionForm({ onSuccess, onCancel }: Recurr
                     onClick={onCancel}
                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
-                    Cancel
+                    {t('form.cancel')}
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
                     className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50"
                 >
-                    {loading ? 'Saving...' : 'Schedule Transaction'}
+                    {loading ? t('form.saving') : t('form.scheduleTransaction')}
                 </button>
             </div>
         </form>

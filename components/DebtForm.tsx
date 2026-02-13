@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from '@/lib/i18n'
 
 interface Category {
     id: string
@@ -14,6 +15,7 @@ interface DebtFormProps {
 }
 
 export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
+    const { t } = useTranslation()
     const [name, setName] = useState(debt?.name || '')
     const [totalAmount, setTotalAmount] = useState(debt?.totalAmount || '')
     const [categoryId, setCategoryId] = useState(debt?.categoryId || '')
@@ -63,7 +65,6 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
         } catch (err) {
             console.error('Error adding category:', err)
         } finally {
-            setLoading(true) // Wait, should be false
             setLoading(false)
         }
     }
@@ -92,7 +93,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                 onSuccess()
             } else {
                 const data = await response.json()
-                setError(data.error || 'Error saving debt')
+                setError(data.error || 'Error')
             }
         } catch (err) {
             setError('Connection error')
@@ -110,7 +111,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
             )}
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Debt Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.name')}</label>
                 <input
                     type="text"
                     value={name}
@@ -123,7 +124,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.totalAmount')}</label>
                     <input
                         type="number"
                         step="0.01"
@@ -135,7 +136,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.dueDate')}</label>
                     <input
                         type="date"
                         value={dueDate}
@@ -146,7 +147,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.category')}</label>
                 <div className="flex gap-2">
                     {!showAddCategory ? (
                         <>
@@ -165,7 +166,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                                 onClick={() => setShowAddCategory(true)}
                                 className="px-4 py-2 text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50"
                             >
-                                + New
+                                {t('form.newCategory')}
                             </button>
                         </>
                     ) : (
@@ -175,21 +176,21 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                                 value={newCategoryName}
                                 onChange={(e) => setNewCategoryName(e.target.value)}
                                 className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                                placeholder="Category name"
+                                placeholder={t('form.category')}
                             />
                             <button
                                 type="button"
                                 onClick={handleAddCategory}
                                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                             >
-                                Add
+                                {t('form.addCategory')}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setShowAddCategory(false)}
                                 className="px-4 py-2 text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50"
                             >
-                                Cancel
+                                {t('form.cancel')}
                             </button>
                         </>
                     )}
@@ -202,14 +203,14 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                     disabled={loading}
                     className="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50"
                 >
-                    {loading ? 'Saving...' : debt ? 'Update Debt' : 'Create Debt'}
+                    {loading ? t('form.saving') : debt ? t('form.update') : t('form.save')}
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
                     className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-200 transition-colors"
                 >
-                    Cancel
+                    {t('form.cancel')}
                 </button>
             </div>
         </form>

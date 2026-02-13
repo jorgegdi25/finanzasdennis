@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslation } from '@/lib/i18n'
 
 interface AccountCardProps {
   account: {
@@ -15,61 +16,35 @@ interface AccountCardProps {
   onEdit?: (account: AccountCardProps['account']) => void
 }
 
-/**
- * Card component to display a bank account
- */
 export default function AccountCard({ account, onDelete, onEdit }: AccountCardProps) {
+  const { t, locale } = useTranslation()
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
   const handleDelete = async () => {
-    if (!showConfirm) {
-      setShowConfirm(true)
-      return
-    }
-
+    if (!showConfirm) { setShowConfirm(true); return }
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/accounts/${account.id}`, {
-        method: 'DELETE',
-      })
-
-      if (response.ok) {
-        onDelete(account.id)
-      } else {
-        let errorMessage = 'Error deleting account'
-        try {
-          const data = await response.json()
-          errorMessage = data.error || errorMessage
-        } catch (parseError) {
-          errorMessage = `Error ${response.status}: ${response.statusText}`
-        }
+      const response = await fetch(`/api/accounts/${account.id}`, { method: 'DELETE' })
+      if (response.ok) { onDelete(account.id) }
+      else {
+        let errorMessage = t('accounts.deleteError')
+        try { const data = await response.json(); errorMessage = data.error || errorMessage } catch { }
         alert(errorMessage)
       }
     } catch (error) {
-      console.error('Error deleting:', error)
       const errorMsg = error instanceof Error ? error.message : 'Connection error'
-      alert(`Error: ${errorMsg}. Please try again.`)
-    } finally {
-      setIsDeleting(false)
-      setShowConfirm(false)
-    }
+      alert(`Error: ${errorMsg}`)
+    } finally { setIsDeleting(false); setShowConfirm(false) }
   }
 
   const formatBalance = (balance: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(balance)
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(balance)
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    return new Date(dateString).toLocaleDateString(locale === 'es' ? 'es-CO' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
   return (
@@ -77,43 +52,26 @@ export default function AccountCard({ account, onDelete, onEdit }: AccountCardPr
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-semibold text-gray-900">{account.name}</h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Created on {formatDate(account.createdAt)}
-          </p>
+          <p className="text-sm text-gray-500 mt-1">{t('accounts.createdOn', { date: formatDate(account.createdAt) })}</p>
         </div>
         <div className="flex gap-2">
           {onEdit && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit(account)
-              }}
-              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-            >
-              Edit
+            <button onClick={(e) => { e.stopPropagation(); onEdit(account) }}
+              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+              {t('accounts.editBtn')}
             </button>
           )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              handleDelete()
-            }}
+          <button onClick={(e) => { e.stopPropagation(); handleDelete() }}
             disabled={isDeleting}
-            className={`text-red-600 hover:text-red-800 text-sm font-medium ${showConfirm ? 'bg-red-50 px-3 py-1 rounded' : ''
-              } disabled:opacity-50`}
-          >
-            {showConfirm ? (isDeleting ? 'Deleting...' : 'Confirm?') : 'Delete'}
+            className={`text-red-600 hover:text-red-800 text-sm font-medium ${showConfirm ? 'bg-red-50 px-3 py-1 rounded' : ''} disabled:opacity-50`}>
+            {showConfirm ? (isDeleting ? t('accounts.deleting') : t('accounts.confirm')) : t('accounts.deleteBtn')}
           </button>
         </div>
       </div>
-
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">Balance:</span>
-          <span
-            className={`text-2xl font-bold ${account.balance >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-          >
+          <span className="text-sm text-gray-600">{t('accounts.balance')}</span>
+          <span className={`text-2xl font-bold ${account.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {formatBalance(account.balance)}
           </span>
         </div>
