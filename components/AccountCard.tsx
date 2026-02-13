@@ -40,7 +40,11 @@ export default function AccountCard({ account, onDelete, onEdit }: AccountCardPr
   }
 
   const formatBalance = (balance: number) => {
-    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(balance)
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(balance)
   }
 
   const formatDate = (dateString: string) => {

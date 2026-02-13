@@ -64,7 +64,8 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'COP',
+      maximumFractionDigits: 0
     }).format(amount)
   }
 

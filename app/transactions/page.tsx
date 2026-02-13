@@ -56,7 +56,11 @@ export default function TransactionsPage() {
   const net = income - expenses
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(amount)
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(amount)
   }
 
   const handleDelete = async (id: string) => {

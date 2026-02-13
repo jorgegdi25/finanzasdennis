@@ -42,7 +42,11 @@ export default function FinancialOverviewChart({ income, expenses }: FinancialOv
                     />
                     <Tooltip
                         cursor={{ fill: '#f3f4f6' }}
-                        formatter={(value: any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value))}
+                        formatter={(value: any) => new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'COP',
+                            maximumFractionDigits: 0
+                        }).format(Number(value))}
                         contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: 'none' }}
                     />
                     <Bar dataKey="amount" radius={[4, 4, 0, 0]} barSize={50}>

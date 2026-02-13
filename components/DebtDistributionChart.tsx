@@ -42,7 +42,11 @@ export default function DebtDistributionChart({ data }: DebtDistributionChartPro
                         ))}
                     </Pie>
                     <Tooltip
-                        formatter={(value: any) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value))}
+                        formatter={(value: any) => new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'COP',
+                            maximumFractionDigits: 0
+                        }).format(Number(value))}
                         contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: 'none' }}
                         itemStyle={{ color: '#000' }}
                     />

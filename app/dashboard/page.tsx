@@ -82,7 +82,11 @@ export default function DashboardPage() {
   }, [debts, recurringItems])
 
   const formatBalance = (balance: number) => {
-    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(balance)
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(balance)
   }
 
   const formatDate = (date: Date) => {
@@ -114,7 +118,7 @@ export default function DashboardPage() {
             <span className="text-base font-medium text-gray-500">{t('dashboard.totalBalance')}</span>
             <Wallet className="w-6 h-6 text-gray-900" />
           </div>
-          <p className="text-4xl font-bold text-gray-900 tracking-tight">
+          <p className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight truncate" title={formatBalance(totalBalance)}>
             {isLoading ? '...' : formatBalance(totalBalance)}
           </p>
         </div>
@@ -124,7 +128,7 @@ export default function DashboardPage() {
             <span className="text-base font-medium text-gray-500">{t('dashboard.income')}</span>
             <ArrowUpRight className="w-6 h-6 text-green-600" />
           </div>
-          <p className="text-3xl font-bold text-green-600 tracking-tight">
+          <p className="text-xl md:text-2xl font-bold text-green-600 tracking-tight truncate" title={formatBalance(income)}>
             {isLoading ? '...' : formatBalance(income)}
           </p>
         </div>
@@ -134,7 +138,7 @@ export default function DashboardPage() {
             <span className="text-base font-medium text-gray-500">{t('dashboard.expenses')}</span>
             <ArrowDownRight className="w-6 h-6 text-red-600" />
           </div>
-          <p className="text-3xl font-bold text-red-600 tracking-tight">
+          <p className="text-xl md:text-2xl font-bold text-red-600 tracking-tight truncate" title={formatBalance(expenses)}>
             {isLoading ? '...' : formatBalance(expenses)}
           </p>
         </div>
@@ -144,7 +148,7 @@ export default function DashboardPage() {
             <span className="text-base font-medium text-gray-500">{t('dashboard.totalDebt')}</span>
             <CreditCard className="w-6 h-6 text-gray-900" />
           </div>
-          <p className="text-3xl font-bold text-gray-900 tracking-tight">
+          <p className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight truncate" title={formatBalance(totalDebt)}>
             {isLoading ? '...' : formatBalance(totalDebt)}
           </p>
         </div>

@@ -68,7 +68,11 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
     const styles = urgencyStyles[urgency]
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(amount)
+        return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+            style: 'currency',
+            currency: 'COP',
+            maximumFractionDigits: 0
+        }).format(amount)
     }
 
     const formatDate = (dateString: string) => {
