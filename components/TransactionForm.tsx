@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, FormEvent, useEffect } from 'react'
+import { useTranslation } from '@/lib/i18n'
 
 interface Account {
   id: string
@@ -30,6 +31,7 @@ interface Debt {
  * Form component to create or edit a transaction
  */
 export default function TransactionForm({ transaction, onSuccess, onCancel }: TransactionFormProps) {
+  const { t, locale } = useTranslation()
   const [type, setType] = useState<'income' | 'expense'>(transaction?.type || 'expense')
   const [amount, setAmount] = useState(transaction?.amount?.toString() || '')
   const [description, setDescription] = useState(transaction?.description || '')
@@ -99,14 +101,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
     // Basic validation
     if (!accountId) {
-      setError('Please select an account')
+      setError(t('tform.selectAccount'))
       setLoading(false)
       return
     }
 
     const amountNum = parseFloat(amount)
     if (isNaN(amountNum) || amountNum <= 0) {
-      setError('Please enter a valid amount greater than 0')
+      setError('Please enter a valid amount greater than 0') // Can reuse or add key, but this is error msg
       setLoading(false)
       return
     }
@@ -214,10 +216,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
     }
   }
 
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', { style: 'currency', currency: 'USD' }).format(val)
+  }
+
   if (loadingAccounts) {
     return (
       <div className="text-center py-4">
-        <p className="text-gray-500">Loading accounts...</p>
+        <p className="text-gray-500">{t('tform.loadingAccounts')}</p>
       </div>
     )
   }
@@ -225,9 +231,9 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   if (accounts.length === 0) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded">
-        <p className="font-medium">No accounts available</p>
+        <p className="font-medium">{t('tform.noAccounts')}</p>
         <p className="text-sm mt-1">
-          You need to create at least one account before adding transactions.
+          {t('tform.noAccountsDesc')}
         </p>
       </div>
     )
@@ -244,7 +250,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-            Transaction Type
+            {t('form.type')}
           </label>
           <select
             id="type"
@@ -253,14 +259,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             disabled={loading}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
           >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
+            <option value="expense">{t('transactions.expenses')}</option>
+            <option value="income">{t('transactions.income')}</option>
           </select>
         </div>
 
         <div>
           <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-            Amount
+            {t('form.amount')}
           </label>
           <input
             id="amount"
@@ -279,7 +285,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div>
         <label htmlFor="accountId" className="block text-sm font-medium text-gray-700 mb-1">
-          Account
+          {t('form.account')}
         </label>
         <select
           id="accountId"
@@ -289,7 +295,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
         >
-          <option value="">Select an account</option>
+          <option value="">{t('tform.selectAccount')}</option>
           {accounts.map((account) => (
             <option key={account.id} value={account.id}>
               {account.name}
@@ -300,7 +306,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
 
       <div>
         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Description (optional)
+          {t('form.description')} {t('form.optional')}
         </label>
         <input
           id="description"
@@ -309,14 +315,14 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           onChange={(e) => setDescription(e.target.value)}
           disabled={loading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
-          placeholder="e.g. Supermarket, Salary, etc."
+          placeholder={t('form.descriptionPlaceholder')}
         />
       </div>
 
       {type === 'expense' && debts.length > 0 && (
         <div>
           <label htmlFor="debtId" className="block text-sm font-medium text-gray-700 mb-1">
-            Link to debt (optional)
+            {t('tform.linkDebt')}
           </label>
           <select
             id="debtId"
@@ -325,7 +331,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             disabled={loading}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
           >
-            <option value="">None - General expense</option>
+            <option value="">{t('tform.generalExpense')}</option>
             {debts.map((debt) => (
               <option key={debt.id} value={debt.id}>
                 {debt.name}
@@ -334,7 +340,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           </select>
           {debtId && (
             <p className="mt-2 text-sm font-medium text-indigo-600 bg-indigo-50 p-2 rounded">
-              Current remaining balance: {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(debts.find(d => d.id === debtId)?.remainingAmount || 0)}
+              {t('tform.currentBalance')} {formatCurrency(debts.find(d => d.id === debtId)?.remainingAmount || 0)}
             </p>
           )}
         </div>
@@ -351,7 +357,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           />
           <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
           <span className="ms-3 text-sm font-medium text-gray-900">
-            {isEditing ? 'Convert to recurring transaction?' : 'Is this a recurring transaction?'}
+            {isEditing ? t('tform.convertToRecurring') : t('tform.isRecurring')}
           </span>
         </label>
 
@@ -359,7 +365,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
             <div>
               <label htmlFor="frequency" className="block text-sm font-medium text-gray-700 mb-1">
-                Frequency
+                {t('form.frequency')}
               </label>
               <select
                 id="frequency"
@@ -367,17 +373,17 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
                 onChange={(e) => setFrequency(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value="daily">{t('freq.daily')}</option>
+                <option value="weekly">{t('freq.weekly')}</option>
+                <option value="monthly">{t('freq.monthly')}</option>
+                <option value="yearly">{t('freq.yearly')}</option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date
+                  {t('form.startDate')}
                 </label>
                 <input
                   id="startDate"
@@ -390,7 +396,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
               </div>
               <div>
                 <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date <span className="text-gray-400 font-normal">(Optional)</span>
+                  {t('form.endDate')} <span className="text-gray-400 font-normal">{t('form.optional')}</span>
                 </label>
                 <input
                   id="endDate"
@@ -403,8 +409,8 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             </div>
             <p className="text-xs text-gray-500">
               {isEditing
-                ? 'This instance will be updated and a new schedule will be created for future transactions.'
-                : 'A new transaction will be created automatically based on this schedule.'}
+                ? t('tform.recurringUpdateHint')
+                : t('tform.recurringCreateHint')}
             </p>
           </div>
         )}
@@ -416,7 +422,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
           disabled={loading || !accountId}
           className="flex-1 bg-black text-white px-4 py-2.5 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         >
-          {loading ? 'Saving...' : isEditing ? 'Update Transaction' : `Create ${isRecurring ? 'Recurring ' : ''}Transaction`}
+          {loading ? t('form.saving') : isEditing ? t('tform.updateTransaction') : isRecurring ? t('tform.createRecurring') : t('tform.createTransaction')}
         </button>
         {onCancel && (
           <button
@@ -425,7 +431,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
             disabled={loading}
             className="px-4 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 transition-colors"
           >
-            Cancel
+            {t('form.cancel')}
           </button>
         )}
       </div>

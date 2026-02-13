@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslation } from '@/lib/i18n'
 
 interface TransactionCardProps {
   transaction: {
@@ -23,6 +24,7 @@ interface TransactionCardProps {
  * Card component to display a transaction
  */
 export default function TransactionCard({ transaction, onDelete, onEdit }: TransactionCardProps) {
+  const { t, locale } = useTranslation()
   const [isDeleting, setIsDeleting] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
@@ -41,19 +43,18 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
       if (response.ok) {
         onDelete(transaction.id)
       } else {
-        let errorMessage = 'Error deleting transaction'
+        let errorMessage = t('transactions.deleteError')
         try {
           const data = await response.json()
           errorMessage = data.error || errorMessage
         } catch (parseError) {
-          errorMessage = `Error ${response.status}: ${response.statusText}`
+          // ignore
         }
         alert(errorMessage)
       }
     } catch (error) {
       console.error('Error deleting:', error)
-      const errorMsg = error instanceof Error ? error.message : 'Connection error'
-      alert(`Error: ${errorMsg}. Please try again.`)
+      alert(t('transactions.deleteError'))
     } finally {
       setIsDeleting(false)
       setShowConfirm(false)
@@ -61,14 +62,14 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
   }
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(amount)
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(locale === 'es' ? 'es-CO' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -86,10 +87,10 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className={`px-2 py-1 rounded text-xs font-semibold ${isIncome
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'
               }`}>
-              {isIncome ? 'Income' : 'Expense'}
+              {isIncome ? t('card.income') : t('card.expense')}
             </span>
             <span className="text-sm text-gray-500">
               {transaction.account.name}
@@ -113,7 +114,7 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
               }}
               className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
             >
-              Edit
+              {t('card.edit')}
             </button>
           )}
           <button
@@ -125,14 +126,14 @@ export default function TransactionCard({ transaction, onDelete, onEdit }: Trans
             className={`text-red-600 hover:text-red-800 text-sm font-medium ${showConfirm ? 'bg-red-50 px-3 py-1 rounded' : ''
               } disabled:opacity-50`}
           >
-            {showConfirm ? (isDeleting ? 'Deleting...' : 'Confirm?') : 'Delete'}
+            {showConfirm ? (isDeleting ? t('card.deleting') : t('card.confirm')) : t('card.delete')}
           </button>
         </div>
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-200">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">Amount:</span>
+          <span className="text-sm text-gray-600">{t('card.amount')}</span>
           <span
             className={`text-2xl font-bold ${isIncome ? 'text-green-600' : 'text-red-600'
               }`}

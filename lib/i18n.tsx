@@ -158,6 +158,31 @@ const translations = {
     'form.save': { en: 'Save', es: 'Guardar' },
     'form.update': { en: 'Update', es: 'Actualizar' },
 
+    // ─── Transaction Card ───
+    'card.income': { en: 'Income', es: 'Ingreso' },
+    'card.expense': { en: 'Expense', es: 'Gasto' },
+    'card.amount': { en: 'Amount:', es: 'Monto:' },
+    'card.delete': { en: 'Delete', es: 'Eliminar' },
+    'card.edit': { en: 'Edit', es: 'Editar' },
+    'card.confirm': { en: 'Confirm?', es: '¿Confirmar?' },
+    'card.deleting': { en: 'Deleting...', es: 'Eliminando...' },
+
+    // ─── Transaction Form ───
+    'tform.selectAccount': { en: 'Select an account', es: 'Selecciona una cuenta' },
+    'tform.noAccounts': { en: 'No accounts available', es: 'No hay cuentas disponibles' },
+    'tform.noAccountsDesc': { en: 'You need to create at least one account before adding transactions.', es: 'Necesitas crear al menos una cuenta antes de agregar transacciones.' },
+    'tform.linkDebt': { en: 'Link to debt (optional)', es: 'Vincular a deuda (opcional)' },
+    'tform.generalExpense': { en: 'None - General expense', es: 'Ninguna - Gasto general' },
+    'tform.currentBalance': { en: 'Current remaining balance:', es: 'Saldo restante actual:' },
+    'tform.isRecurring': { en: 'Is this a recurring transaction?', es: '¿Es esta una transacción recurrente?' },
+    'tform.convertToRecurring': { en: 'Convert to recurring transaction?', es: '¿Convertir a transacción recurrente?' },
+    'tform.recurringUpdateHint': { en: 'This instance will be updated and a new schedule will be created for future transactions.', es: 'Esta instancia se actualizará y se creará un nuevo programa para futuras transacciones.' },
+    'tform.recurringCreateHint': { en: 'A new transaction will be created automatically based on this schedule.', es: 'Se creará una nueva transacción automáticamente basada en este programa.' },
+    'tform.createTransaction': { en: 'Create Transaction', es: 'Crear Transacción' },
+    'tform.createRecurring': { en: 'Create Recurring Transaction', es: 'Crear Transacción Recurrente' },
+    'tform.updateTransaction': { en: 'Update Transaction', es: 'Actualizar Transacción' },
+    'tform.loadingAccounts': { en: 'Loading accounts...', es: 'Cargando cuentas...' },
+
     // ─── Settings ───
     'settings.title': { en: 'Settings', es: 'Ajustes' },
     'settings.subtitle': { en: 'Manage your account preferences and security.', es: 'Administra tus preferencias de cuenta y seguridad.' },
