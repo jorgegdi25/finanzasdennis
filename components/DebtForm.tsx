@@ -18,6 +18,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
     const { t } = useTranslation()
     const [name, setName] = useState(debt?.name || '')
     const [totalAmount, setTotalAmount] = useState(debt?.totalAmount || '')
+    const [totalInstallments, setTotalInstallments] = useState(debt?.totalInstallments?.toString() || '')
     const [categoryId, setCategoryId] = useState(debt?.categoryId || '')
     const [dueDate, setDueDate] = useState(debt?.dueDate ? new Date(debt.dueDate).toISOString().split('T')[0] : '')
 
@@ -84,6 +85,7 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                 body: JSON.stringify({
                     name,
                     totalAmount: parseFloat(totalAmount),
+                    totalInstallments: totalInstallments ? parseInt(totalInstallments) : null,
                     categoryId,
                     dueDate: dueDate || null
                 })
@@ -135,6 +137,21 @@ export default function DebtForm({ debt, onSuccess, onCancel }: DebtFormProps) {
                         required
                     />
                 </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.totalInstallments')}</label>
+                    <input
+                        type="number"
+                        step="1"
+                        min="1"
+                        value={totalInstallments}
+                        onChange={(e) => setTotalInstallments(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                        placeholder="e.g. 12, 24"
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">{t('form.dueDate')}</label>
                     <input

@@ -48,6 +48,41 @@ export default function SettingsPage() {
                 </div>
 
                 <PasswordChangeForm />
+
+                {/* Danger Zone */}
+                <div className="bg-red-50 rounded-xl border border-red-200 p-6 shadow-sm">
+                    <h3 className="font-semibold text-red-900 mb-2">Danger Zone</h3>
+                    <p className="text-sm text-red-700 mb-4">
+                        {t('settings.resetConfirm')}
+                    </p>
+                    <button
+                        onClick={async () => {
+                            if (confirm(t('settings.resetConfirm'))) {
+                                const btn = document.getElementById('reset-btn') as HTMLButtonElement
+                                if (btn) {
+                                    btn.disabled = true
+                                    btn.innerText = 'Resetting...'
+                                }
+                                try {
+                                    const res = await fetch('/api/reset-demo', { method: 'POST' })
+                                    if (res.ok) {
+                                        window.location.href = '/dashboard'
+                                    } else {
+                                        alert('Error resetting data')
+                                        if (btn) btn.disabled = false
+                                    }
+                                } catch (e) {
+                                    alert('Connection error')
+                                    if (btn) btn.disabled = false
+                                }
+                            }
+                        }}
+                        id="reset-btn"
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 transition-colors"
+                    >
+                        {t('settings.resetDemo')}
+                    </button>
+                </div>
             </div>
         </AppLayout>
     )

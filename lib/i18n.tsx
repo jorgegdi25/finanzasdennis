@@ -158,6 +158,12 @@ const translations = {
     'form.save': { en: 'Save', es: 'Guardar' },
     'form.update': { en: 'Update', es: 'Actualizar' },
 
+    'form.totalInstallments': { en: 'Total Installments (Optional)', es: 'Cuotas Totales (Opcional)' },
+    'debts.installmentProgress': { en: 'Installment {current} of {total}', es: 'Cuota {current} de {total}' },
+    'debts.installmentsLeft': { en: '{n} installments left', es: 'Faltan {n} cuotas' },
+    'settings.resetDemo': { en: 'Reset Demo Data', es: 'Reiniciar Datos Demo' },
+    'settings.resetConfirm': { en: 'Are you sure? This will delete EVERYTHING and create 3 houses and 3 cars.', es: '¿Seguro? Esto borrará TODO y creará 3 casas y 3 carros.' },
+
     // ─── Transaction Card ───
     'card.income': { en: 'Income', es: 'Ingreso' },
     'card.expense': { en: 'Expense', es: 'Gasto' },

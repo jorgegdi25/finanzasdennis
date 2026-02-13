@@ -21,6 +21,8 @@ interface Debt {
     monthlyPayment?: number
     monthlyIncome?: number
     monthlyNetCost?: number
+    totalInstallments?: number
+    paidInstallments?: number
     linkedRecurring?: LinkedRecurring[]
     categoryId: string
     category: { id: string; name: string }
@@ -157,6 +159,29 @@ export default function DebtCard({ debt, onDelete, onEdit }: DebtCardProps) {
                                 </div>
                             </>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Installments Progress */}
+            {debt.totalInstallments && debt.totalInstallments > 0 && (
+                <div className="mb-4">
+                    <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            {t('debts.installmentProgress', {
+                                current: Math.min((debt.paidInstallments || 0) + 1, debt.totalInstallments).toString(),
+                                total: debt.totalInstallments.toString()
+                            })}
+                        </span>
+                        <span className="text-xs text-indigo-600 font-medium">
+                            {t('debts.installmentsLeft', { n: Math.max(0, debt.totalInstallments - (debt.paidInstallments || 0)).toString() })}
+                        </span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-1.5">
+                        <div
+                            className="bg-indigo-500 h-1.5 rounded-full transition-all duration-500"
+                            style={{ width: `${Math.min(100, ((debt.paidInstallments || 0) / debt.totalInstallments) * 100)}%` }}
+                        ></div>
                     </div>
                 </div>
             )}

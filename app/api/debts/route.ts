@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
                 ...debt,
                 paidAmount,
                 remainingAmount: Math.max(0, debt.totalAmount - paidAmount),
+                paidInstallments: debt.transactions.length,
                 monthlyPayment,
                 monthlyIncome,
                 monthlyNetCost,
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
         if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
         const body = await request.json()
-        const { name, totalAmount, categoryId, dueDate } = body
+        const { name, totalAmount, totalInstallments, categoryId, dueDate } = body
 
         if (!name || !totalAmount || !categoryId) {
             return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -78,7 +79,8 @@ export async function POST(request: NextRequest) {
         const debt = await prisma.debt.create({
             data: {
                 name,
-                totalAmount: parseFloat(totalAmount),
+                totalAmount,
+                totalInstallments: totalInstallments || null,
                 categoryId,
                 userId: session,
                 dueDate: dueDate ? new Date(dueDate) : null
