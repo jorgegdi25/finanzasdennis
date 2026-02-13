@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { useTranslation } from '@/lib/i18n'
+import { useTranslation, type Locale } from '@/lib/i18n'
 import {
     LayoutDashboard,
     Wallet,
@@ -13,13 +13,14 @@ import {
     LogOut,
     Menu,
     X,
-    Settings
+    Settings,
+    Globe
 } from 'lucide-react'
 
 export default function Sidebar() {
     const pathname = usePathname()
     const [isOpen, setIsOpen] = useState(false)
-    const { t } = useTranslation()
+    const { t, locale, setLocale } = useTranslation()
 
     const navItems = [
         { href: '/dashboard', label: t('nav.panel'), icon: LayoutDashboard },
@@ -103,8 +104,30 @@ export default function Sidebar() {
                         })}
                     </nav>
 
-                    {/* Footer with logout */}
-                    <div className="p-4 border-t border-gray-100">
+                    {/* Footer with Language and logout */}
+                    <div className="p-4 border-t border-gray-100 space-y-2">
+                        {/* Language Toggle */}
+                        <div className="flex bg-gray-200 rounded-lg p-1 mb-2">
+                            <button
+                                onClick={() => setLocale('en')}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-semibold transition-all ${locale === 'en'
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <span>🇺🇸</span> EN
+                            </button>
+                            <button
+                                onClick={() => setLocale('es')}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-semibold transition-all ${locale === 'es'
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <span>🇪🇸</span> ES
+                            </button>
+                        </div>
+
                         <button
                             onClick={handleLogout}
                             className="flex items-center gap-3 px-4 py-3 w-full text-left text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
