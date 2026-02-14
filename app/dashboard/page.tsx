@@ -167,56 +167,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Upcoming Payments */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5">
-            <CalendarClock className="w-5 h-5 text-indigo-600" />
-            <h3 className="font-bold text-lg text-gray-900">{t('dashboard.upcomingPayments')}</h3>
-          </div>
-          <Link href="/debts" className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
-            {t('dashboard.viewDebts')} <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          </div>
-        ) : upcomingPayments.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 text-base">{t('dashboard.noUpcoming')}</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {upcomingPayments.map((payment) => {
-              const styles = getUrgencyStyles(payment.urgency)
-              return (
-                <div key={`${payment.type}-${payment.id}`} className={`flex items-center justify-between p-4 rounded-xl border ${styles.bg} transition-all duration-200 hover:shadow-sm`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2.5 h-2.5 rounded-full ${styles.dot} shrink-0`} />
-                    <div>
-                      <p className="font-semibold text-gray-900">{payment.name}</p>
-                      <p className={`text-sm ${styles.text}`}>
-                        {payment.type === 'debt' ? t('dashboard.debt') : t('dashboard.recurring')} · {formatDate(payment.dueDate)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {styles.label && (
-                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles.badge}`}>
-                        {styles.label}
-                      </span>
-                    )}
-                    <p className="font-bold text-gray-900 text-lg">{formatBalance(payment.amount)}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
@@ -233,37 +183,86 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Accounts */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-lg text-gray-900">{t('dashboard.yourAccounts')}</h3>
-          <Link href="/accounts" className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
-            {t('dashboard.viewAll')} <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {isLoading && accounts.length === 0 ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-          </div>
-        ) : accounts.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4 text-base">{t('dashboard.noAccounts')}</p>
-            <Link href="/accounts" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-semibold shadow-lg shadow-indigo-500/20">
-              <Landmark className="w-5 h-5" />
-              {t('dashboard.createFirst')}
+      {/* Bottom Row: Upcoming Payments + Accounts side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Payments — compact */}
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <CalendarClock className="w-4 h-4 text-indigo-600" />
+              <h3 className="font-bold text-base text-gray-900">{t('dashboard.upcomingPayments')}</h3>
+            </div>
+            <Link href="/recurring" className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
+              {t('dashboard.viewDebts')} <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {recentAccounts.map((account: any) => (
-              <Link key={account.id} href="/accounts" className="p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl hover:shadow-md transition-all duration-200 border border-gray-100 group">
-                <p className="font-medium text-gray-500 text-sm mb-2 group-hover:text-indigo-600 transition-colors">{account.name}</p>
-                <p className="text-2xl font-extrabold text-gray-900">{formatBalance(account.balance)}</p>
-              </Link>
-            ))}
+
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : upcomingPayments.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-gray-400 text-sm">{t('dashboard.noUpcoming')}</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {upcomingPayments.slice(0, 4).map((payment) => {
+                const styles = getUrgencyStyles(payment.urgency)
+                return (
+                  <div key={`${payment.type}-${payment.id}`} className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-2 h-2 rounded-full ${styles.dot} shrink-0`} />
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 text-sm truncate">{payment.name}</p>
+                        <p className={`text-xs ${styles.text}`}>{formatDate(payment.dueDate)}</p>
+                      </div>
+                    </div>
+                    <p className="font-bold text-gray-900 text-sm shrink-0 ml-3">{formatBalance(payment.amount)}</p>
+                  </div>
+                )
+              })}
+              {upcomingPayments.length > 4 && (
+                <Link href="/recurring" className="block text-center text-xs text-indigo-600 font-semibold pt-2 hover:text-indigo-800 transition-colors">
+                  +{upcomingPayments.length - 4} más
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Accounts */}
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-base text-gray-900">{t('dashboard.yourAccounts')}</h3>
+            <Link href="/accounts" className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
+              {t('dashboard.viewAll')} <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
-        )}
+
+          {isLoading && accounts.length === 0 ? (
+            <div className="flex justify-center py-6">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : accounts.length === 0 ? (
+            <div className="text-center py-6">
+              <p className="text-gray-400 mb-3 text-sm">{t('dashboard.noAccounts')}</p>
+              <Link href="/accounts" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors font-semibold text-sm shadow-lg shadow-indigo-500/20">
+                <Landmark className="w-4 h-4" />
+                {t('dashboard.createFirst')}
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {recentAccounts.map((account: any) => (
+                <Link key={account.id} href="/accounts" className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                  <p className="font-medium text-gray-500 text-sm group-hover:text-indigo-600 transition-colors">{account.name}</p>
+                  <p className="text-lg font-bold text-gray-900">{formatBalance(account.balance)}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </AppLayout>
   )
