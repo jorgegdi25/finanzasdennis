@@ -78,7 +78,7 @@ export default function AccountsPage() {
       <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-8">
         <p className="text-sm font-medium text-gray-500">{t('accounts.totalBalance')}</p>
         <p className="text-3xl font-bold text-gray-900 mt-1">
-          {new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+          {new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
             currencyDisplay: 'narrowSymbol',

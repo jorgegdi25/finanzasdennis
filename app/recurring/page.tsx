@@ -24,7 +24,7 @@ export default function RecurringTransactionsPage() {
     }
 
     const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
+        return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
             currencyDisplay: 'narrowSymbol',

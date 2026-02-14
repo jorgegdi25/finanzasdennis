@@ -34,16 +34,16 @@ export async function POST(request: NextRequest) {
         const mainAccount = await prisma.account.create({
             data: {
                 name: 'Banco Principal',
-                balance: 15_000_000,
+                balance: 15_000,
                 userId
             }
         })
 
         // 4. Create 3 Houses (Debts)
         const houses = [
-            { name: 'Casa Playa', amount: 250_000_000, installments: 120, payment: 2_500_000, rent: 1_800_000 },
-            { name: 'Casa Ciudad', amount: 180_000_000, installments: 120, payment: 1_900_000, rent: 2_100_000 },
-            { name: 'Casa Campo', amount: 120_000_000, installments: 60, payment: 2_200_000, rent: 0 } // No rent for this one
+            { name: 'Casa Playa', amount: 250_000, installments: 120, payment: 2_500, rent: 1_800 },
+            { name: 'Casa Ciudad', amount: 180_000, installments: 120, payment: 1_900, rent: 2_100 },
+            { name: 'Casa Campo', amount: 120_000, installments: 60, payment: 2_200, rent: 0 } // No rent for this one
         ]
 
         for (const house of houses) {
@@ -120,9 +120,9 @@ export async function POST(request: NextRequest) {
 
         // 5. Create 3 Cars (Debts)
         const cars = [
-            { name: 'Toyota Fortuner', amount: 220_000_000, installments: 48, payment: 4_500_000 },
-            { name: 'Mazda CX-30', amount: 110_000_000, installments: 60, payment: 2_100_000 },
-            { name: 'Ford Ranger', amount: 190_000_000, installments: 36, payment: 5_800_000 }
+            { name: 'Toyota Fortuner', amount: 55_000, installments: 48, payment: 1_200 },
+            { name: 'Mazda CX-30', amount: 32_000, installments: 60, payment: 550 },
+            { name: 'Ford Ranger', amount: 48_000, installments: 36, payment: 1_500 }
         ]
 
         for (const car of cars) {
