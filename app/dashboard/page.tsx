@@ -5,7 +5,7 @@ import Link from 'next/link'
 import AppLayout from '@/components/AppLayout'
 import FinancialOverviewChart from '@/components/FinancialOverviewChart'
 import DebtDistributionChart from '@/components/DebtDistributionChart'
-import { CreditCard, Wallet, ArrowUpRight, ArrowDownRight, Clock, CalendarClock } from 'lucide-react'
+import { TrendingUp, TrendingDown, Landmark, Receipt, Clock, CalendarClock, ArrowRight } from 'lucide-react'
 import useSWR from 'swr'
 import { fetcher } from '@/lib/fetcher'
 import { useTranslation } from '@/lib/i18n'
@@ -96,10 +96,10 @@ export default function DashboardPage() {
 
   const getUrgencyStyles = (urgency: string) => {
     switch (urgency) {
-      case 'overdue': return { bg: 'bg-red-50 border-red-200', text: 'text-red-700', badge: 'bg-red-100 text-red-700', label: t('urgency.overdue') }
-      case 'urgent': return { bg: 'bg-orange-50 border-orange-200', text: 'text-orange-700', badge: 'bg-orange-100 text-orange-700', label: t('urgency.urgent') }
-      case 'upcoming': return { bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-700', badge: 'bg-yellow-100 text-yellow-700', label: t('urgency.upcoming') }
-      default: return { bg: 'bg-white border-gray-200', text: 'text-gray-600', badge: 'bg-gray-100 text-gray-600', label: '' }
+      case 'overdue': return { bg: 'bg-red-50 border-red-200', text: 'text-red-600', badge: 'bg-red-100 text-red-700', label: t('urgency.overdue'), dot: 'bg-red-500' }
+      case 'urgent': return { bg: 'bg-amber-50 border-amber-200', text: 'text-amber-600', badge: 'bg-amber-100 text-amber-700', label: t('urgency.urgent'), dot: 'bg-amber-500' }
+      case 'upcoming': return { bg: 'bg-blue-50 border-blue-200', text: 'text-blue-600', badge: 'bg-blue-100 text-blue-700', label: t('urgency.upcoming'), dot: 'bg-blue-500' }
+      default: return { bg: 'bg-white border-gray-200', text: 'text-gray-500', badge: 'bg-gray-100 text-gray-600', label: '', dot: 'bg-gray-400' }
     }
   }
 
@@ -113,63 +113,75 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        {/* Total Balance */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-base font-medium text-gray-500">{t('dashboard.totalBalance')}</span>
-            <Wallet className="w-6 h-6 text-gray-900" />
+            <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.totalBalance')}</span>
+            <div className="icon-blue p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
+              <Landmark className="w-5 h-5 text-white" />
+            </div>
           </div>
-          <p className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight truncate" title={formatBalance(totalBalance)}>
+          <p className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight truncate" title={formatBalance(totalBalance)}>
             {isLoading ? '...' : formatBalance(totalBalance)}
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        {/* Income */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-base font-medium text-gray-500">{t('dashboard.income')}</span>
-            <ArrowUpRight className="w-6 h-6 text-green-600" />
+            <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.income')}</span>
+            <div className="icon-emerald p-2.5 rounded-xl shadow-lg shadow-emerald-500/20">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
           </div>
-          <p className="text-xl md:text-2xl font-bold text-green-600 tracking-tight truncate" title={formatBalance(income)}>
+          <p className="text-xl md:text-2xl font-extrabold text-emerald-600 tracking-tight truncate" title={formatBalance(income)}>
             {isLoading ? '...' : formatBalance(income)}
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        {/* Expenses */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-base font-medium text-gray-500">{t('dashboard.expenses')}</span>
-            <ArrowDownRight className="w-6 h-6 text-red-600" />
+            <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.expenses')}</span>
+            <div className="icon-rose p-2.5 rounded-xl shadow-lg shadow-rose-500/20">
+              <TrendingDown className="w-5 h-5 text-white" />
+            </div>
           </div>
-          <p className="text-xl md:text-2xl font-bold text-red-600 tracking-tight truncate" title={formatBalance(expenses)}>
+          <p className="text-xl md:text-2xl font-extrabold text-rose-600 tracking-tight truncate" title={formatBalance(expenses)}>
             {isLoading ? '...' : formatBalance(expenses)}
           </p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        {/* Total Debt */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-base font-medium text-gray-500">{t('dashboard.totalDebt')}</span>
-            <CreditCard className="w-6 h-6 text-gray-900" />
+            <span className="text-sm font-semibold text-gray-500 uppercase tracking-wide">{t('dashboard.totalDebt')}</span>
+            <div className="icon-amber p-2.5 rounded-xl shadow-lg shadow-amber-500/20">
+              <Receipt className="w-5 h-5 text-white" />
+            </div>
           </div>
-          <p className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight truncate" title={formatBalance(totalDebt)}>
+          <p className="text-xl md:text-2xl font-extrabold text-gray-900 tracking-tight truncate" title={formatBalance(totalDebt)}>
             {isLoading ? '...' : formatBalance(totalDebt)}
           </p>
         </div>
       </div>
 
       {/* Upcoming Payments */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm mb-8">
+      <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm mb-8">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <CalendarClock className="w-5 h-5 text-gray-900" />
+          <div className="flex items-center gap-2.5">
+            <CalendarClock className="w-5 h-5 text-indigo-600" />
             <h3 className="font-bold text-lg text-gray-900">{t('dashboard.upcomingPayments')}</h3>
           </div>
-          <Link href="/debts" className="text-base text-gray-600 hover:text-black font-medium border-b border-transparent hover:border-black transition-colors">
-            {t('dashboard.viewDebts')}
+          <Link href="/debts" className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
+            {t('dashboard.viewDebts')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
           </div>
         ) : upcomingPayments.length === 0 ? (
           <div className="text-center py-8">
@@ -180,15 +192,9 @@ export default function DashboardPage() {
             {upcomingPayments.map((payment) => {
               const styles = getUrgencyStyles(payment.urgency)
               return (
-                <div key={`${payment.type}-${payment.id}`} className={`flex items-center justify-between p-4 rounded-lg border ${styles.bg} transition-colors`}>
+                <div key={`${payment.type}-${payment.id}`} className={`flex items-center justify-between p-4 rounded-xl border ${styles.bg} transition-all duration-200 hover:shadow-sm`}>
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${payment.urgency === 'overdue' ? 'bg-red-100' : payment.urgency === 'urgent' ? 'bg-orange-100' : 'bg-gray-100'}`}>
-                      {payment.type === 'debt' ? (
-                        <CreditCard className={`w-4 h-4 ${styles.text}`} />
-                      ) : (
-                        <Clock className={`w-4 h-4 ${styles.text}`} />
-                      )}
-                    </div>
+                    <div className={`w-2.5 h-2.5 rounded-full ${styles.dot} shrink-0`} />
                     <div>
                       <p className="font-semibold text-gray-900">{payment.name}</p>
                       <p className={`text-sm ${styles.text}`}>
@@ -198,7 +204,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     {styles.label && (
-                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${styles.badge}`}>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${styles.badge}`}>
                         {styles.label}
                       </span>
                     )}
@@ -213,13 +219,13 @@ export default function DashboardPage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
           <h3 className="font-bold text-lg text-gray-900 mb-6">{t('dashboard.cashFlow')}</h3>
           <div className="h-64">
             <FinancialOverviewChart income={income} expenses={expenses} />
           </div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
           <h3 className="font-bold text-lg text-gray-900 mb-6">{t('dashboard.debtDistribution')}</h3>
           <div className="h-64">
             <DebtDistributionChart data={debtDistributionData} />
@@ -228,32 +234,32 @@ export default function DashboardPage() {
       </div>
 
       {/* Accounts */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-bold text-lg text-gray-900">{t('dashboard.yourAccounts')}</h3>
-          <Link href="/accounts" className="text-base text-gray-600 hover:text-black font-medium border-b border-transparent hover:border-black transition-colors">
-            {t('dashboard.viewAll')}
+          <Link href="/accounts" className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
+            {t('dashboard.viewAll')} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
         {isLoading && accounts.length === 0 ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
           </div>
         ) : accounts.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4 text-base">{t('dashboard.noAccounts')}</p>
-            <Link href="/accounts" className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors">
-              <Wallet className="w-5 h-5" />
+            <Link href="/accounts" className="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-semibold shadow-lg shadow-indigo-500/20">
+              <Landmark className="w-5 h-5" />
               {t('dashboard.createFirst')}
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {recentAccounts.map((account: any) => (
-              <Link key={account.id} href="/accounts" className="p-6 bg-white rounded-lg hover:bg-gray-50 transition-colors border border-gray-200 group">
-                <p className="font-medium text-gray-600 text-base mb-2 group-hover:text-black">{account.name}</p>
-                <p className="text-2xl font-bold text-gray-900">{formatBalance(account.balance)}</p>
+              <Link key={account.id} href="/accounts" className="p-5 bg-gradient-to-br from-gray-50 to-white rounded-xl hover:shadow-md transition-all duration-200 border border-gray-100 group">
+                <p className="font-medium text-gray-500 text-sm mb-2 group-hover:text-indigo-600 transition-colors">{account.name}</p>
+                <p className="text-2xl font-extrabold text-gray-900">{formatBalance(account.balance)}</p>
               </Link>
             ))}
           </div>
