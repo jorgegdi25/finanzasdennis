@@ -80,8 +80,8 @@ export default function AccountsPage() {
         <p className="text-3xl font-bold text-gray-900 mt-1">
           {new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
             style: 'currency',
-            currency: 'COP',
-            maximumFractionDigits: 0
+            currency: 'USD',
+            currencyDisplay: 'narrowSymbol'
           }).format(totalBalance)}
         </p>
         <p className="text-sm text-gray-500 mt-2">{t('accounts.count', { n: accounts.length })}</p>

@@ -58,8 +58,8 @@ export default function TransactionsPage() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
       style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0
+      currency: 'USD',
+      currencyDisplay: 'narrowSymbol'
     }).format(amount)
   }
 

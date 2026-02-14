@@ -44,8 +44,8 @@ export default function FinancialOverviewChart({ income, expenses }: FinancialOv
                         cursor={{ fill: '#f3f4f6' }}
                         formatter={(value: any) => new Intl.NumberFormat('en-US', {
                             style: 'currency',
-                            currency: 'COP',
-                            maximumFractionDigits: 0
+                            currency: 'USD',
+                            currencyDisplay: 'narrowSymbol'
                         }).format(Number(value))}
                         contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', boxShadow: 'none' }}
                     />

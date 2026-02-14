@@ -219,8 +219,8 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }: Tr
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
       style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0
+      currency: 'USD',
+      currencyDisplay: 'narrowSymbol'
     }).format(val)
   }
 
