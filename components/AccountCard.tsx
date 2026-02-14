@@ -43,7 +43,8 @@ export default function AccountCard({ account, onDelete, onEdit }: AccountCardPr
     return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
       style: 'currency',
       currency: 'USD',
-      currencyDisplay: 'narrowSymbol'
+      currencyDisplay: 'narrowSymbol',
+      maximumFractionDigits: 0
     }).format(balance)
   }
 

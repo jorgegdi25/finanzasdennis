@@ -39,7 +39,8 @@ export default function DebtsPage() {
         return new Intl.NumberFormat(locale === 'es' ? 'es-CO' : 'en-US', {
             style: 'currency',
             currency: 'USD',
-            currencyDisplay: 'narrowSymbol'
+            currencyDisplay: 'narrowSymbol',
+            maximumFractionDigits: 0
         }).format(amount)
     }
 
